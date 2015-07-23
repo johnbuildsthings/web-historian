@@ -63,24 +63,23 @@ exports.isUrlArchived = function(pathname, callback){
 
 };
 
-exports.downloadUrls = function(urlarrya, callback){
-  exports.readListOfUrls(function(dataArray){
-    dataArray.forEach(function(url){
-      exports.isUrlArchived(url, function(err, data){
-        if(err){
-          httpHelper.sendHttpRequest({host: url}, function(data){
-            fs.writeFile(exports.paths.archivedSites+'/'+url, data, 'utf-8', function(){
-              console.log('site archived, ', url);
-              if (callback) {
-                callback();
-              }
-            });
+exports.downloadUrls = function(dataArray, callback){
+  dataArray.forEach(function(url){
+    exports.isUrlArchived(url, function(err, data){
+      if(err){
+        httpHelper.sendHttpRequest({host: url}, function(data){
+          fs.writeFile(exports.paths.archivedSites+'/'+url, data, 'utf-8', function(){
+            console.log('site archived, ', url);
+            if (callback) {
+              callback();
+            }
           });
-        }
-      });
+        });
+      }
     });
   });
-};
+}
+
 
 
 
