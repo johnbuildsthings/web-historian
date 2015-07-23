@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
-var httpHelper = require('../web/http-helper')
+var httpHelper = require('../web/http-helpers')
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
  * Consider using the `paths` object below to store frequently used file paths. This way,
@@ -47,7 +47,7 @@ exports.isUrlInList = function(url, callback){
 };
 
 exports.addUrlToList = function(url, callback){
-  fs.appendFile(exports.paths.list, url + '\n', function(err){
+  fs.appendFile(exports.paths.list, '\n' + url, function(err){
     if(err){
       console.log('error in addUrlToList: ', err.message);
       callback(false);
@@ -57,12 +57,13 @@ exports.addUrlToList = function(url, callback){
 };
 
 exports.isUrlArchived = function(pathname, callback){
-  fs.readFile(exports.paths.archivedSites + pathname, 'utf-8', function(err, data) {
+  fs.readFile(exports.paths.archivedSites + '/' + pathname, 'utf-8', function(err, data) {
     callback(err, data);
   });
+
 };
 
-exports.downloadUrls = function(){
+exports.downloadUrls = function(urlarrya, callback){
   exports.readListOfUrls(function(dataArray){
     dataArray.forEach(function(url){
       exports.isUrlArchived(url, function(err, data){
@@ -70,6 +71,9 @@ exports.downloadUrls = function(){
           httpHelper.sendHttpRequest({host: url}, function(data){
             fs.writeFile(exports.paths.archivedSites+'/'+url, data, 'utf-8', function(){
               console.log('site archived, ', url);
+              if (callback) {
+                callback();
+              }
             });
           });
         }

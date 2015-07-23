@@ -37,6 +37,8 @@ exports.sendHttpRequest = function(option, callback){
 }
 
 exports.serveAssets = function(res, asset, callback) {
+    console.log('http helper 40', asset);
+  
   fs.readFile( asset, function( err, data) {
     if(err) {
       console.log(err.message);

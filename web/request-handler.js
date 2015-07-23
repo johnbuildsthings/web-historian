@@ -30,8 +30,22 @@ exports.postRequestHandler = function(req, res) {
   });
 
   req.on('end', function(){
-    archive.addUrlToList(JSON.parse(data).url);
-    httpHelpers.sendResponse( res, 'added to the archive!!', 302);
+    var address = data.split('=')[1];
+    archive.isUrlArchived(address, function(err, data){
+      if(err){
+        archive.addUrlToList( address, function(is){
+          if (!is) {
+            httpHelpers.sendResponse( res, 'failed to post request handler line 38ß', 500)
+          }
+          
+          httpHelpers.serveAssets( res, archive.paths.siteAssets + '/loading.html');
+      
+        });
+      }else{
+        httpHelpers.serveAssets( res, archive.archivedSites + address, 302);
+      }
+    });
+
   });
 
 };
